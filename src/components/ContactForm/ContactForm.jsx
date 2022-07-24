@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import s from './ContactForm.module.css'
-import { useAddContactMutation } from '../../redux/ContactsSlice.js'
 
 
-export default function ContactForm() {
+export default function ContactForm(props) {
 
-  const [addContact] = useAddContactMutation()
+  const { onSubmit } = props
+
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
@@ -19,25 +19,18 @@ export default function ContactForm() {
 
   }
 
-  const handleAddContact = async contact => {
-    try {
-      await addContact(contact)
-    } catch (error) {
-      console.log('error', error)
-    }
-  }
-
   const handleSubmit = event => {
     event.preventDefault();
 
     const contact = { name: name, phone: number}
     //console.log('trying to add contact:', contact)
 
-    handleAddContact(contact)
+    onSubmit(contact)
 
     setName('');
     setNumber('');
   };
+
 
   return (
       <form onSubmit={handleSubmit} className={s.form}>

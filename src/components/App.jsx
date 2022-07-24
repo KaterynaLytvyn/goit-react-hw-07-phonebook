@@ -2,12 +2,13 @@ import ContactForm from "components/ContactForm/ContactForm";
 import Filter from "components/Filter/Filter";
 import ContactList from 'components/ContactList/ContactList';
 import { useSelector } from "react-redux";
-import { useGetContactsQuery } from '../redux/ContactsSlice.js'
+import { useGetContactsQuery, useAddContactMutation } from '../redux/ContactsSlice.js'
 
 
 const App = () => {
 
   const filter = useSelector(state => state.filter)
+  const [addContact] = useAddContactMutation()
 
   const { data: contacts, error, isLoading } = useGetContactsQuery()
 
@@ -21,10 +22,24 @@ const App = () => {
     return result;
   }
 
+  const handleAddContact = async contact => {
+    if(contacts.some(c => c.name ===contact.name)) {
+      alert(contact.name +' is already in contacts')
+      return
+    }
+
+    try {
+      await addContact(contact)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+ 
+
   return (
     <div className="container">
       <h1>Phonebook</h1>
-      <ContactForm/>
+      <ContactForm onSubmit={handleAddContact}/>
       <h2>Contacts</h2>
       <Filter/>
       {error && <p>An error occurred:{error}</p>}
